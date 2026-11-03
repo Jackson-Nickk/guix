@@ -34044,22 +34044,30 @@ the abstraction and portability layer as thin as possible.")
 (define-public sbcl-alive-lsp
  (package
   (name "sbcl-alive-lsp")
-  (version "0.2.11")
+  (version "0.4.5")
   (source
    (origin
     (method git-fetch)
     (uri (git-reference
           (url "https://github.com/nobody-famous/alive-lsp")
           (commit (string-append "v" version))))
-    (file-name (git-file-name "sbcl-alive-lsp" version))
+    (file-name (git-file-name "cl-alive-lsp" version))
     (sha256
-     (base32 "1dmgglrg7294vx8qacc5d2hkhfrids1iacihj2l8czrvwc3i19yz"))))
+     (base32 "1m95d10j8l41liq9g9mqj1bb3gfk34pxmpb6za2pq5ccx6arddvw"))))
   (build-system asdf-build-system/sbcl)
   (inputs
    (list sbcl-usocket
          sbcl-cl-json
          sbcl-bordeaux-threads
          sbcl-flexi-streams))
+  (arguments
+   (list #:phases
+         #~(modify-phases %standard-phases
+             (add-after 'unpack 'fix-build
+               (lambda _
+                 (substitute* "src/deps.lisp"
+                   (("send-request nil :type \\(or null \\(function \\(list\\) hash-table\\)\\)")
+                    "send-request nil :type (or null (function (hash-table) list))")))))))
   (home-page "https://github.com/nobody-famous/alive-lsp")
   (synopsis "Common Lisp Alive LSP")
   (description "This package provides a Language Server Protocol
